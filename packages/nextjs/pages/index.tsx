@@ -1,59 +1,75 @@
-import Link from "next/link";
 import type { NextPage } from "next";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
+import { Balance } from "~~/components/scaffold-eth";
+import deployedContracts from "~~/contracts/deployedContracts";
+import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+
+const CHAIN_ID = 31337;
 
 const Home: NextPage = () => {
+  const { address } = useAccount();
+
+  const { data: tbaAddress } = useScaffoldContractRead({
+    contractName: "ERC6551Registry",
+    functionName: "account",
+    args: [
+      deployedContracts[CHAIN_ID].ERC6551Account.address,
+      BigInt("1"),
+      deployedContracts[CHAIN_ID].WalletNFT.address,
+      BigInt("1"),
+      BigInt("1"),
+    ],
+  });
+
+  const { writeAsync: createAccount } = useScaffoldContractWrite({
+    contractName: "ERC6551Registry",
+    functionName: "createAccount",
+    args: [
+      deployedContracts[CHAIN_ID].ERC6551Account.address,
+      BigInt("1"),
+      deployedContracts[CHAIN_ID].WalletNFT.address,
+      BigInt("1"),
+      BigInt("1"),
+      "0x",
+    ],
+    onBlockConfirmation: txnReceipt => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+      console.log(txnReceipt);
+    },
+  });
+
+  const { writeAsync: withdraw } = useScaffoldContractWrite({
+    contractName: "ERC6551Account",
+    functionName: "execute",
+    args: [address, BigInt("1"), "0x", BigInt("1")],
+    onBlockConfirmation: txnReceipt => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+      console.log(txnReceipt);
+    },
+  });
+
   return (
     <>
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-          </h1>
-          <p className="text-center text-lg">
-            Get started by editing{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/nextjs/pages/index.tsx
-            </code>
-          </p>
-          <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
-          </p>
-        </div>
-
-        <div className="flex-grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contract
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
-            </div>
-          </div>
+          <p>Token Bound Account: {tbaAddress}</p>
+          <p>Balance: {tbaAddress && <Balance address={tbaAddress as Address} />}</p>
+          <button
+            className="py-2 px-16 mb-10 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
+            onClick={() => createAccount()}
+          >
+            Create Token Bound Account
+          </button>
+          <br />
+          <button
+            className="py-2 px-16 mb-10 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
+            onClick={() => withdraw()}
+          >
+            Withdraw
+          </button>
         </div>
       </div>
     </>
