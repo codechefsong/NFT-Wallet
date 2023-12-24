@@ -18,3 +18,4 @@ contract WalletNFT is ERC721URIStorage {
     _tokenIds.increment();
     return newItemId;
   }
+}

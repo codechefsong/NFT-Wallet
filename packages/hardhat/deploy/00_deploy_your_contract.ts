@@ -37,6 +37,12 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
     autoMine: true,
   });
 
+  await deploy("CoinToken", {
+    from: deployer,
+    log: true,
+    autoMine: true,
+  });
+
   await deploy("ERC6551Registry", {
     from: deployer,
     log: true,
