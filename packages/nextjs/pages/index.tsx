@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { NextPage } from "next";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
@@ -15,6 +16,14 @@ const CHAIN_ID = 31337;
 const Home: NextPage = () => {
   const { address } = useAccount();
 
+  const [selectedNFT, setSelectNFT] = useState(0);
+
+  const { data: nfts } = useScaffoldContractRead({
+    contractName: "WalletNFT",
+    functionName: "getMyNFTs",
+    args: [address],
+  });
+
   const { data: tbaAddress } = useScaffoldContractRead({
     contractName: "ERC6551Registry",
     functionName: "account",
@@ -22,7 +31,7 @@ const Home: NextPage = () => {
       deployedContracts[CHAIN_ID].ERC6551Account.address,
       BigInt("1"),
       deployedContracts[CHAIN_ID].WalletNFT.address,
-      BigInt("1"),
+      BigInt(selectedNFT),
       BigInt("1"),
     ],
   });
@@ -30,7 +39,7 @@ const Home: NextPage = () => {
   const { data: owner } = useScaffoldContractReadWithAddress({
     contractName: "ERC6551Account",
     functionName: "owner",
-    contractAddress: "0xcba265A5D7B7B0F8b5c5a7bC44e0e214372991c6",
+    contractAddress: "0xAD1d99EdE09b8838aB5cc6506F1D7D51C5D74b52",
   });
 
   const { writeAsync: withdraw } = useScaffoldContractWrite({
@@ -48,6 +57,19 @@ const Home: NextPage = () => {
       <MetaHeader />
       <div className="flex items-center flex-col flex-grow pt-10">
         <div className="px-5">
+          <h2 className="block text-3xl mb-2">Your Wallet NFTs</h2>
+          <div className="flex">
+            {nfts?.map((n, index) => (
+              <div
+                key={index}
+                className="w-16 h-20 border border-gray-30 flex items-center justify-center font-bold mr-2 mb-2 cursor-pointer"
+                style={{ background: selectedNFT === index ? "#00cc99" : "white" }}
+                onClick={() => setSelectNFT(index)}
+              >
+                {n.toString()}
+              </div>
+            ))}
+          </div>
           <p>Token Bound Account: {tbaAddress}</p>
           <p>Balance: {tbaAddress && <Balance address={tbaAddress as Address} />}</p>
           <br />

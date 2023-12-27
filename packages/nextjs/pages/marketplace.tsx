@@ -33,7 +33,7 @@ const Marketplace: NextPage = () => {
       deployedContracts[CHAIN_ID].ERC6551Account.address,
       BigInt("1"),
       deployedContracts[CHAIN_ID].WalletNFT.address,
-      BigInt("1"),
+      BigInt(selectedNFT),
       BigInt("1"),
       "0x",
     ],
