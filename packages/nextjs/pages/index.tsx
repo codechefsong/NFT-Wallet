@@ -4,7 +4,11 @@ import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Balance } from "~~/components/scaffold-eth";
 import deployedContracts from "~~/contracts/deployedContracts";
-import { useScaffoldContractRead, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import {
+  useScaffoldContractRead,
+  useScaffoldContractReadWithAddress,
+  useScaffoldContractWrite,
+} from "~~/hooks/scaffold-eth";
 
 const CHAIN_ID = 31337;
 
@@ -21,6 +25,12 @@ const Home: NextPage = () => {
       BigInt("1"),
       BigInt("1"),
     ],
+  });
+
+  const { data: owner } = useScaffoldContractReadWithAddress({
+    contractName: "ERC6551Account",
+    functionName: "owner",
+    contractAddress: "0xcba265A5D7B7B0F8b5c5a7bC44e0e214372991c6",
   });
 
   const { writeAsync: createAccount } = useScaffoldContractWrite({
@@ -70,6 +80,7 @@ const Home: NextPage = () => {
           >
             Withdraw
           </button>
+          {owner && <p>{owner as any}</p>}
         </div>
       </div>
     </>
