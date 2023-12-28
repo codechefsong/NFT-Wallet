@@ -8,7 +8,7 @@ import deployedContracts from "~~/contracts/deployedContracts";
 import {
   useScaffoldContractRead,
   useScaffoldContractReadWithAddress,
-  useScaffoldContractWrite,
+  useScaffoldContractWriteWithAddress,
 } from "~~/hooks/scaffold-eth";
 
 const CHAIN_ID = 31337;
@@ -29,7 +29,7 @@ const Home: NextPage = () => {
     functionName: "account",
     args: [
       deployedContracts[CHAIN_ID].ERC6551Account.address,
-      BigInt("1"),
+      BigInt(CHAIN_ID),
       deployedContracts[CHAIN_ID].WalletNFT.address,
       BigInt(selectedNFT),
       BigInt("1"),
@@ -39,17 +39,18 @@ const Home: NextPage = () => {
   const { data: owner } = useScaffoldContractReadWithAddress({
     contractName: "ERC6551Account",
     functionName: "owner",
-    contractAddress: "0xAD1d99EdE09b8838aB5cc6506F1D7D51C5D74b52",
+    contractAddress: tbaAddress,
   });
 
-  const { writeAsync: withdraw } = useScaffoldContractWrite({
+  const { writeAsync: withdraw } = useScaffoldContractWriteWithAddress({
     contractName: "ERC6551Account",
     functionName: "execute",
-    args: [address, BigInt("1"), "0x", BigInt("1")],
+    args: [address, BigInt("10000000000000000"), "0x", BigInt("0")],
     onBlockConfirmation: txnReceipt => {
       console.log("📦 Transaction blockHash", txnReceipt.blockHash);
       console.log(txnReceipt);
     },
+    contractAddress: tbaAddress,
   });
 
   return (

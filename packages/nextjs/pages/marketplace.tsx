@@ -31,7 +31,7 @@ const Marketplace: NextPage = () => {
     functionName: "createAccount",
     args: [
       deployedContracts[CHAIN_ID].ERC6551Account.address,
-      BigInt("1"),
+      BigInt(CHAIN_ID),
       deployedContracts[CHAIN_ID].WalletNFT.address,
       BigInt(selectedNFT),
       BigInt("1"),

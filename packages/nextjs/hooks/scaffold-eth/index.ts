@@ -9,6 +9,7 @@ export * from "./useScaffoldContract";
 export * from "./useScaffoldContractRead";
 export * from "./useScaffoldContractReadWithAddress";
 export * from "./useScaffoldContractWrite";
+export * from "./useScaffoldContractWriteWithAddress";
 export * from "./useScaffoldEventSubscriber";
 export * from "./useScaffoldEventHistory";
 export * from "./useTransactor";
