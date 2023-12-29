@@ -4,12 +4,9 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Balance } from "~~/components/scaffold-eth";
+import { Withdraw } from "~~/components/wallet/Withdraw";
 import deployedContracts from "~~/contracts/deployedContracts";
-import {
-  useScaffoldContractRead,
-  useScaffoldContractReadWithAddress,
-  useScaffoldContractWriteWithAddress,
-} from "~~/hooks/scaffold-eth";
+import { useScaffoldContractRead, useScaffoldContractReadWithAddress } from "~~/hooks/scaffold-eth";
 
 const CHAIN_ID = 31337;
 
@@ -42,17 +39,6 @@ const Home: NextPage = () => {
     contractAddress: tbaAddress,
   });
 
-  const { writeAsync: withdraw } = useScaffoldContractWriteWithAddress({
-    contractName: "ERC6551Account",
-    functionName: "execute",
-    args: [address, BigInt("10000000000000000"), "0x", BigInt("0")],
-    onBlockConfirmation: txnReceipt => {
-      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
-      console.log(txnReceipt);
-    },
-    contractAddress: tbaAddress,
-  });
-
   return (
     <>
       <MetaHeader />
@@ -74,13 +60,9 @@ const Home: NextPage = () => {
           <p>Token Bound Account: {tbaAddress}</p>
           <p>Balance: {tbaAddress && <Balance address={tbaAddress as Address} />}</p>
           <br />
-          <button
-            className="py-2 px-16 mb-10 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
-            onClick={() => withdraw()}
-          >
-            Withdraw
-          </button>
-          {owner && <p>{owner as any}</p>}
+          {owner && <p>Owner: {owner as any}</p>}
+
+          <Withdraw tbaAddress={tbaAddress} />
         </div>
       </div>
     </>
