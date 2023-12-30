@@ -9,7 +9,7 @@ export const Withdraw = ({ tbaAddress }: any) => {
     contractName: "ERC6551Account",
     functionName: "execute",
     args: [to, BigInt(amount), "0x", BigInt("0")],
-    onBlockConfirmation: txnReceipt => {
+    onBlockConfirmation: (txnReceipt: { blockHash: any; }) => {
       console.log("📦 Transaction blockHash", txnReceipt.blockHash);
       console.log(txnReceipt);
     },
