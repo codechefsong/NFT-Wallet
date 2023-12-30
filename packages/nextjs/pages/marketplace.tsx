@@ -17,10 +17,37 @@ const Marketplace: NextPage = () => {
     args: [address],
   });
 
+  const { data: tbaAddress } = useScaffoldContractRead({
+    contractName: "ERC6551Registry",
+    functionName: "account",
+    args: [
+      deployedContracts[CHAIN_ID].ERC6551Account.address,
+      BigInt(CHAIN_ID),
+      deployedContracts[CHAIN_ID].WalletNFT.address,
+      BigInt(selectedNFT),
+      BigInt("1"),
+    ],
+  });
+
+  const { data: tokenAmount } = useScaffoldContractRead({
+    contractName: "CoinToken",
+    functionName: "balanceOf",
+    args: [tbaAddress],
+  });
+
   const { writeAsync: mintNFT } = useScaffoldContractWrite({
     contractName: "WalletNFT",
     functionName: "mint",
     args: [address, "URL"],
+    onBlockConfirmation: txnReceipt => {
+      console.log("📦 Transaction blockHash", txnReceipt.blockHash);
+    },
+  });
+
+  const { writeAsync: mintToken } = useScaffoldContractWrite({
+    contractName: "CoinToken",
+    functionName: "mint",
+    args: [tbaAddress, BigInt("1000000000000000000")],
     onBlockConfirmation: txnReceipt => {
       console.log("📦 Transaction blockHash", txnReceipt.blockHash);
     },
@@ -69,9 +96,9 @@ const Marketplace: NextPage = () => {
         >
           Create Token Bound Account
         </button>
-        <h1 className="text-center mb-5">
+        <h2 className="text-center mb-5">
           <span className="block text-2xl mb-2">Buy a Wallet NFT</span>
-        </h1>
+        </h2>
 
         <button
           className="py-2 px-16 mb-1 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
@@ -79,6 +106,21 @@ const Marketplace: NextPage = () => {
         >
           Buy
         </button>
+        {tbaAddress && (
+          <>
+            <h2 className="text-center text-2xl mt-5">
+              Mint Token for
+              <span className="block">{tbaAddress}</span>
+            </h2>
+            <p>{tokenAmount?.toString()} Coins</p>
+            <button
+              className="py-2 px-16 mb-1 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
+              onClick={() => mintToken()}
+            >
+              Mint
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
