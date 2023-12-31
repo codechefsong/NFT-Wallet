@@ -39,6 +39,12 @@ const Home: NextPage = () => {
     contractAddress: tbaAddress,
   });
 
+  const { data: tokenAmount } = useScaffoldContractRead({
+    contractName: "CoinToken",
+    functionName: "balanceOf",
+    args: [tbaAddress],
+  });
+
   return (
     <>
       <MetaHeader />
@@ -63,6 +69,8 @@ const Home: NextPage = () => {
           {owner && <p>Owner: {owner as any}</p>}
 
           <Withdraw tbaAddress={tbaAddress} />
+
+          <p>{tokenAmount?.toString()} Coins</p>
         </div>
       </div>
     </>

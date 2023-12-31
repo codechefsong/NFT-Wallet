@@ -1,14 +1,24 @@
 import { useState } from "react";
+import { encodeFunctionData } from "viem";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldContractWriteWithAddress } from "~~/hooks/scaffold-eth";
 
-export const Withdraw = ({ tbaAddress }: any) => {
+const CHAIN_ID = 31337;
+
+export const TransferToken = ({ tbaAddress }: any) => {
   const [to, setTo] = useState("");
   const [amount, setAmount] = useState("");
 
-  const { writeAsync: withdraw } = useScaffoldContractWriteWithAddress({
+  const dataTransfer = encodeFunctionData({
+    abi: deployedContracts[CHAIN_ID].CoinToken.abi,
+    functionName: "approve",
+    args: ["0x817B1C214389D297279D3Ed47b691160f9c3B71f", BigInt("500000000000000000")],
+  });
+
+  const { writeAsync: transfer } = useScaffoldContractWriteWithAddress({
     contractName: "ERC6551Account",
     functionName: "execute",
-    args: [to, BigInt(amount), "0x", BigInt("0")],
+    args: ["0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512", BigInt(amount), dataTransfer, BigInt("0")],
     onBlockConfirmation: (txnReceipt: { blockHash: any }) => {
       console.log("📦 Transaction blockHash", txnReceipt.blockHash);
       console.log(txnReceipt);
@@ -37,9 +47,9 @@ export const Withdraw = ({ tbaAddress }: any) => {
       </div>
       <button
         className="py-2 px-16 mb-10 mt-3 bg-green-500 rounded baseline hover:bg-green-300 disabled:opacity-50"
-        onClick={() => withdraw()}
+        onClick={() => transfer()}
       >
-        Withdraw
+        Transfer
       </button>
     </div>
   );
