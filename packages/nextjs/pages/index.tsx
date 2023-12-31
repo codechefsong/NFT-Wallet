@@ -4,6 +4,7 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { Balance } from "~~/components/scaffold-eth";
+import { TransferToken } from "~~/components/wallet/TransferToken";
 import { Withdraw } from "~~/components/wallet/Withdraw";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldContractRead, useScaffoldContractReadWithAddress } from "~~/hooks/scaffold-eth";
@@ -69,6 +70,7 @@ const Home: NextPage = () => {
           {owner && <p>Owner: {owner as any}</p>}
 
           <Withdraw tbaAddress={tbaAddress} />
+          <TransferToken tbaAddress={tbaAddress} />
 
           <p>{tokenAmount?.toString()} Coins</p>
         </div>

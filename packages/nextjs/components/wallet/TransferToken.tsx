@@ -11,7 +11,7 @@ export const TransferToken = ({ tbaAddress }: any) => {
 
   const dataTransfer = encodeFunctionData({
     abi: deployedContracts[CHAIN_ID].CoinToken.abi,
-    functionName: "approve",
+    functionName: "transfer",
     args: ["0x817B1C214389D297279D3Ed47b691160f9c3B71f", BigInt("500000000000000000")],
   });
 
